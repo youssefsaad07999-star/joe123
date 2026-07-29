@@ -3,17 +3,10 @@
  
 [fs]
 "/app/" = "."
-
-[build]
-command = "npm install && npm run build"
-
-[deploy]
-after_deploy = "php artisan migrate --force --no-interaction && php artisan db:seed --force --no-interaction && php artisan config:cache && php artisan route:cache && php artisan view:cache"
-
+ 
 [[command]]
 name = "run"
 module = "php/php:php"
 runner = "wasi"
-
 [command.annotations.wasi]
 main-args = ["-t", "/app/public", "-S", "localhost:8080"]
