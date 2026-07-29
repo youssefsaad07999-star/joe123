@@ -36,7 +36,7 @@
                     <h1 class="font-['Cormorant_Garamond'] text-4xl font-light">Create Account</h1>
                 </div>
 
-                <form action="{{ route('register') }}" method="POST" class="space-y-4">
+                <form action="{{ route('register.store') }}" method="POST" class="space-y-4">
                     @csrf
 
                     {{-- Name fields structured cleanly with a responsive grid --}}

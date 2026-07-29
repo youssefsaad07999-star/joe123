@@ -23,7 +23,7 @@
                     <h1 class="font-['Cormorant_Garamond'] text-4xl font-light">Sign In</h1>
                 </div>
 
-                <form action="{{ route('login') }}" method="POST" class="space-y-5">
+                <form action="{{ route('login.store') }}" method="POST" class="space-y-5">
                     @csrf
                     <x-form.field name="email" title="Email Address" type="email" placeholder="you@example.com" />
                     <x-form.field name="password" title="Password" type="password" placeholder="••••••••" />

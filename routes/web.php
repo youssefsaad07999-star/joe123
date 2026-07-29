@@ -95,11 +95,11 @@ Route::post('/paddle/webhook', WebhookController::class);
 
 Route::group(['middleware' => 'guest'], function () {
     Route::get('/register', [RegisteredUserController::class, 'create'])->name('register');
-    Route::post('/register', [RegisteredUserController::class, 'store'])->name('register');
+    Route::post('/register', [RegisteredUserController::class, 'store'])->name('register.store');
     // Route::post('/categories/{category}', [ProductController::class, 'byCategory']);
 
     Route::get('/login', [SessionsController::class, 'create'])->name('login');
-    Route::post('/login', [SessionsController::class, 'store'])->name('login');
+    Route::post('/login', [SessionsController::class, 'store'])->name('login.store');
 
     Route::get('/forgot-password', [PasswordResetController::class, 'create'])
         ->name('password.request');
