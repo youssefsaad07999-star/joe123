@@ -2,7 +2,7 @@
 
 namespace Database\Seeders\ProductSeeders;
 
-use App\Models\ProductModels\Size;
+use App\Models\Size;
 use Illuminate\Database\Seeder;
 
 class SizeSeeder extends Seeder

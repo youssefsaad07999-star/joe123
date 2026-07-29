@@ -2,7 +2,7 @@
 
 namespace Database\Seeders\ProductSeeders;
 
-use App\Models\ProductModels\Fit;
+use App\Models\Fit;
 use Illuminate\Database\Seeder;
 
 class FitSeeder extends Seeder

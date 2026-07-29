@@ -1,14 +1,14 @@
 <?php
 
-namespace Database\Factories\ProductModels;
+namespace Database\Factories;
 
-use App\Models\ProductModels\Color;
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Illuminate\Database\Eloquent\Model;
 
 /**
- * @extends Factory<Color>
+ * @extends Factory<Model>
  */
-class ColorFactory extends Factory
+class FitFactory extends Factory
 {
     /**
      * Define the model's default state.

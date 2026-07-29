@@ -1,11 +1,11 @@
 <?php
 
-namespace Database\Factories\ProductModels;
+namespace Database\Factories;
 
-use App\Models\Model;
-use App\Models\ProductModels\Category;
-use App\Models\ProductModels\Fit;
+use App\Models\Category;
+use App\Models\Fit;
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Illuminate\Database\Eloquent\Model;
 
 /**
  * @extends Factory<Model>

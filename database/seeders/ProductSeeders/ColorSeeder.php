@@ -2,7 +2,7 @@
 
 namespace Database\Seeders\ProductSeeders;
 
-use App\Models\ProductModels\Color;
+use App\Models\Color;
 use Illuminate\Database\Seeder;
 
 class ColorSeeder extends Seeder

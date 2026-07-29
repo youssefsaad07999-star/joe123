@@ -1,11 +1,11 @@
 <?php
 
-namespace Database\Factories\ProductModels;
+namespace Database\Factories;
 
-use App\Models\ProductModels\Color;
-use App\Models\ProductModels\Product;
-use App\Models\ProductModels\ProductVariant;
-use App\Models\ProductModels\Size;
+use App\Models\Color;
+use App\Models\Product;
+use App\Models\ProductVariant;
+use App\Models\Size;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
