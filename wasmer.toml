@@ -1,0 +1,16 @@
+[app]
+name = "joe"
+
+[build]
+command = "npm install && npm run build"
+
+[deploy]
+after_deploy = "php artisan migrate --force --no-interaction && php artisan db:seed --force --no-interaction && php artisan config:cache && php artisan route:cache && php artisan view:cache"
+
+[[command]]
+name = "web"
+module = "php"
+runner = "wasm"
+
+[command.annotations.wasi]
+main-args = ["-t", "public", "-S", "0.0.0.0:$PORT"]
