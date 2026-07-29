@@ -1,7 +1,7 @@
 <?php
 
-use App\Models\ProductModels\Color;
-use App\Models\ProductModels\Product;
+use App\Models\Color;
+use App\Models\Product;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;

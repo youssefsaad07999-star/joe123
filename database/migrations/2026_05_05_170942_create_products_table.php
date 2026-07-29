@@ -1,8 +1,8 @@
 <?php
 
-use App\Models\ProductModels\Brand;
-use App\Models\ProductModels\Category;
-use App\Models\ProductModels\Fit;
+use App\Models\Brand;
+use App\Models\Category;
+use App\Models\Fit;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
