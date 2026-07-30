@@ -14,7 +14,9 @@ class ProductController extends Controller
 
         $landingImage = ShopSetting::where('key', 'landing_hero_image')->value('value');
 
-        return view('welcome', compact(['genders', 'landingImage']));
+        $freeShippingThreshold = ShopSetting::get('free_shipping_threshold');
+
+        return view('welcome', compact(['genders', 'landingImage', 'freeShippingThreshold']));
     }
 
     public function genderIndex(Category $gender)
