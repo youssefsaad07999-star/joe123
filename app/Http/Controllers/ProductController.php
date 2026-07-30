@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Category;
 use App\Models\Product;
+use App\Models\ShopSetting;
 
 class ProductController extends Controller
 {
@@ -11,7 +12,9 @@ class ProductController extends Controller
     {
         $genders = Category::genders()->active()->orderBy('sort_order')->get();
 
-        return view('welcome', compact('genders'));
+        $landingImage = ShopSetting::where('key', 'landing_hero_image')->value('value');
+
+        return view('welcome', compact(['genders', 'landingImage']));
     }
 
     public function genderIndex(Category $gender)
