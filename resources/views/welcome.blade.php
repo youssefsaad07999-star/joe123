@@ -42,7 +42,7 @@
                         class="absolute -inset-4 bg-gradient-to-br from-[#C85C6E]/20 to-transparent rounded-3xl blur-xl">
                     </div>
                     <div class="h-140 w-150 relative rounded-3xl overflow-hidden aspect-[4/5] group">
-                        <img src="{{ asset($landingImage) }}"
+                        <img src="{{ asset('storage/' . $landingImage) }}"
                             class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
                             alt="Fashion Collection">
                         <div class="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent"></div>
