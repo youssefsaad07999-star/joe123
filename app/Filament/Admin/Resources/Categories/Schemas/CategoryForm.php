@@ -67,14 +67,14 @@ class CategoryForm
                 FileUpload::make('image_path')
                     ->label('Category Image')
                     ->disk('public')
-                    ->directory('products/gallery')
+                    ->directory('categories')
                     ->image()
                     ->imageEditor()
                     ->visibility('public')
                     ->required()
                     ->saveUploadedFileUsing(function (TemporaryUploadedFile $file) {
                         $manager = new ImageManager(new Driver);
-                        $fileName = 'products/gallery/'.uniqid().'.webp';
+                        $fileName = 'categories/'.uniqid().'.webp';
 
                         $compressedImage = $manager->decode($file->getRealPath())
                             ->scale(width: 1200)
