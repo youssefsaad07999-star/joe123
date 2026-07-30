@@ -21,6 +21,7 @@ class RegisteredUserController extends Controller
 
         $oldSessionId = $request->session()->getId();
 
+        $user->markEmailAsVerified();
         session(['guest_session_id' => $oldSessionId]);
 
         Auth::login($user);
