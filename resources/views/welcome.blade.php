@@ -78,7 +78,7 @@
             @foreach ($genders as $gender)
                 <a href="{{ route('gender.index', ['gender' => $gender->slug]) }}"
                     class="group relative h-[400px] rounded-3xl overflow-hidden bg-gray-200 block">
-                    <img src="{{ asset('images/' . $gender->slug . '.png') }}"
+                    <img src="{{ asset('storage/' . $gender->image_path) }}"
                         class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
                         alt="{{ $gender->name }}">
                     <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent"></div>

@@ -3,13 +3,18 @@
 namespace App\Filament\Admin\Resources\Categories\Schemas;
 
 use App\Models\Category;
+use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Schemas\Components\Utilities\Set;
 use Filament\Schemas\Schema;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use Intervention\Image\Drivers\Gd\Driver;
+use Intervention\Image\ImageManager;
+use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
 
 class CategoryForm
 {
@@ -58,6 +63,28 @@ class CategoryForm
 
                 Toggle::make('is_active')
                     ->default(true),
+
+                FileUpload::make('image_path')
+                    ->label('Category Image')
+                    ->disk('public')
+                    ->directory('products/gallery')
+                    ->image()
+                    ->imageEditor()
+                    ->visibility('public')
+                    ->required()
+                    ->saveUploadedFileUsing(function (TemporaryUploadedFile $file) {
+                        $manager = new ImageManager(new Driver);
+                        $fileName = 'products/gallery/'.uniqid().'.webp';
+
+                        $compressedImage = $manager->decode($file->getRealPath())
+                            ->scale(width: 1200)
+                            ->encodeUsingFileExtension('webp', quality: 90);
+
+                        Storage::disk('public')->put($fileName, (string) $compressedImage);
+
+                        return $fileName;
+                    }),
+
             ]);
     }
 }
