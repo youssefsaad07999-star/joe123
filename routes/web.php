@@ -50,7 +50,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/orders/{order}', [OrderController::class, 'show'])->name('order.show');
 });
 
-Route::middleware(['auth'])->group(function () {
+Route::middleware(['auth', 'verified'])->group(function () {
 
     // Checkout Flow
     Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout.index');
