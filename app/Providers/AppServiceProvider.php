@@ -9,7 +9,6 @@ use App\Models\Product;
 use App\Models\User;
 use App\Observers\OrderObserver;
 use Filament\Actions\CreateAction;
-use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Route;
@@ -54,8 +53,6 @@ class AppServiceProvider extends ServiceProvider
         Gate::before(function ($user, $ability) {
             return $user->hasRole('super_admin') ? true : null;
         });
-
-        Artisan::call('storage:link');
 
     }
 
