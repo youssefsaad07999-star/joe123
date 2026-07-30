@@ -24,9 +24,9 @@ class DatabaseSeeder extends Seeder
             ColorSeeder::class,
             SizeSeeder::class,
             SuperAdminSeeder::class,
-            // ShippingMethodSeeder::class,
-            // ShopSettingsSeeder::class,
-            // CountrySeeder::class,
+            ShippingMethodSeeder::class,
+            ShopSettingsSeeder::class,
+            CountrySeeder::class,
         ]);
     }
 }
