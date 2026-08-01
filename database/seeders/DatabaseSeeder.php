@@ -19,11 +19,11 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         $this->call([
-            // CategorySeeder::class,
-            // FitSeeder::class,
-            // ColorSeeder::class,
-            // SizeSeeder::class,
-            // SuperAdminSeeder::class,
+            CategorySeeder::class,
+            FitSeeder::class,
+            ColorSeeder::class,
+            SizeSeeder::class,
+            SuperAdminSeeder::class,
             ShippingMethodSeeder::class,
             ShopSettingsSeeder::class,
             CountrySeeder::class,
