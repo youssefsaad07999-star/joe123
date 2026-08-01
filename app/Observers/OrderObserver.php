@@ -39,7 +39,7 @@ class OrderObserver
             }
         } elseif ($order->wasChanged('status') && $order->status === OrderStatus::Cancelled) {
 
-            $order->payment->update(['status' => PaymentStatus::Cancelled]);
+            $order->payment?->update(['status' => PaymentStatus::Cancelled]);
         }
     }
 

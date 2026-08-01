@@ -16,6 +16,7 @@ use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Notifications\Notification;
 use Filament\Schemas\Components\Grid;
+use Filament\Schemas\Components\Utilities\Get;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\Filter;
 use Filament\Tables\Filters\SelectFilter;
@@ -137,14 +138,39 @@ class OrdersTable
                     ->iconButton()
                     ->tooltip('Update Status')
                     ->color('warning')
-                    ->modalWidth('sm')
+                    ->modalWidth('md')
                     ->form([
                         Select::make('status')
                             ->options(OrderStatus::class)
                             ->native(false)
-                            ->required(),
+                            ->required()
+                            ->live(),
+
+                        Textarea::make('refund_reason')
+                            ->label('Reason for Cancellation')
+                            ->placeholder('e.g., Out of stock, customer requested cancellation')
+                            ->rows(3)
+                            ->required(fn (Get $get) => $get('status') === OrderStatus::Cancelled)
+                            ->visible(fn (Get $get) => $get('status') === OrderStatus::Cancelled),
                     ])
-                    ->action(fn (Order $record, array $data) => $record->update(['status' => $data['status']]))
+                    ->action(function (Order $record, array $data): void {
+                        DB::transaction(function () use ($record, $data) {
+                            $updateData = ['status' => $data['status']];
+
+                            // If the order is being cancelled, save the reason and optionally restore inventory
+                            if ($data['status'] === OrderStatus::Cancelled) {
+                                $updateData['refund_reason'] = $data['refund_reason'] ?? null;
+
+                                if (! in_array($record->status, [OrderStatus::Cancelled, OrderStatus::Refunded])) {
+                                    foreach ($record->variants as $variant) {
+                                        $variant->increment('stock_quantity', $variant->pivot->quantity);
+                                    }
+                                }
+                            }
+
+                            $record->update($updateData);
+                        });
+                    })
                     ->disabled(fn (Order $record) => in_array($record->status, [OrderStatus::Cancelled, OrderStatus::Refunded])),
 
                 Action::make('refundOrder')
