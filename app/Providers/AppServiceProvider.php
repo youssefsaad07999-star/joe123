@@ -31,7 +31,6 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
 
         Livewire::forceAssetInjection();
 
@@ -39,6 +38,7 @@ class AppServiceProvider extends ServiceProvider
             return Route::is($routeName);
         });
         Order::observe(OrderObserver::class);
+
         // Blade::if('admin', function () {
         //     return auth()->check()
         //     && auth()->user()->role === 'admin';

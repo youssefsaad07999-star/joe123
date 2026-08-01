@@ -15,7 +15,7 @@ class CartItemController extends Controller
     public function index()
     {
         $cartItems = $this->currentCart()
-            ->with(['variant.product', 'variant.size', 'variant.color', 'variant.product.images', 'variant.images'])
+            ->with(['variant.product', 'variant.size', 'variant.color', 'variant.product.images'])
             ->get();
 
         $cartTotal = $cartItems->sum->line_total;
