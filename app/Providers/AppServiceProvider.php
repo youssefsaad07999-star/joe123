@@ -2,7 +2,6 @@
 
 namespace App\Providers;
 
-use App\Models\CartItem;
 use App\Models\Category;
 use App\Models\Order;
 use App\Models\Product;
@@ -12,9 +11,7 @@ use Filament\Actions\CreateAction;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Route;
-use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
-use Livewire\Livewire;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -32,27 +29,16 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
 
-        Livewire::forceAssetInjection();
-
         Blade::if('active', function ($routeName) {
             return Route::is($routeName);
         });
+
         Order::observe(OrderObserver::class);
 
-        // Blade::if('admin', function () {
-        //     return auth()->check()
-        //     && auth()->user()->role === 'admin';
-        // });
-
         $this->registerRouteBindings();
-        $this->registerViewComposers();
 
         CreateAction::configureUsing(function ($action) {
             return $action->slideOver();
-        });
-
-        Gate::before(function ($user, $ability) {
-            return $user->hasRole('super_admin') ? true : null;
         });
 
         Gate::define('viewPulse', function (User $user) {
@@ -63,9 +49,7 @@ class AppServiceProvider extends ServiceProvider
 
     private function registerRouteBindings(): void
     {
-        /*'
-         * {gender} → Category where depth = 'gender', matched by slug
-         */
+
         Route::bind('gender', function (string $slug) {
             return Category::genders()
                 ->active()
@@ -73,10 +57,6 @@ class AppServiceProvider extends ServiceProvider
                 ->firstOrFail();
         });
 
-        /*
-         * {category} → Category where depth = 'category',
-         * scoped to the already-resolved {gender}
-         */
         Route::bind('category', function (string $slug) {
 
             if (request()->hasHeader('X-Livewire')) {
@@ -104,10 +84,6 @@ class AppServiceProvider extends ServiceProvider
                 ->first();
         });
 
-        /*
-         * {subcategory} → Category where depth = 'subcategory',
-         * scoped to the already-resolved {category}
-         */
         Route::bind('subcategory', function ($slug) {
 
             if (request()->hasHeader('X-Livewire')) {
@@ -138,10 +114,6 @@ class AppServiceProvider extends ServiceProvider
                 ->firstOrFail();
         });
 
-        Route::bind('adminCategory', function (string $id) {
-            return Category::findOrFail($id);
-        });
-
         Route::bind('product', function ($slug) {
             return Product::with(['variants.size', 'variants.color', 'images', 'primaryImage', 'fit', 'brand'])
                 ->where('slug', $slug)
@@ -160,48 +132,9 @@ class AppServiceProvider extends ServiceProvider
             ])->findOrFail($id);
 
         });
-        // orders addresses
+
         Route::bind('user', function ($id) {
             return User::with(['addresses'])->findOrFail($id);
-        });
-    }
-
-    private function registerViewComposers(): void
-    {
-        View::composer('components.admin.nav', function ($view) {
-            $view->with('pendingCount', Order::where('status', 'pending')->count());
-        });
-
-        View::composer('components.layout.layout', function ($view) {
-            // $query = CartItem::query();
-
-            // $cartItems = auth()->check()
-            // ? $query->forUser(auth()->id())->with('variant.product.images')->get()
-            // : $query->forSession(session()->getId())->with('variant.product.images')->get();
-
-            // $cartTotal = $cartItems->sum->line_total;
-            // $cartCount = $cartItems->count();
-
-            // $view->with(compact('cartItems', 'cartTotal', 'cartCount'));
-        });
-
-        View::composer('components.layout.nav', function ($view) {
-
-            $genders = Category::genders()
-                ->active()
-                ->with([
-                    'children' => function ($query) {
-                        $query->active()->with([
-                            'children' => function ($subQuery) {
-                                $subQuery->active();
-                            },
-                        ]);
-                    },
-                ])
-                ->get();
-
-            $view->with('navGenders', $genders);
-
         });
     }
 }

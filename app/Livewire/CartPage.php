@@ -14,18 +14,10 @@ class CartPage extends Component
 {
     public bool $isSidebar = false;
 
-    public $cartCount;
-
     #[On('cart-updated')]
     public function refreshCart()
     {
         // Simply triggers a visual re-render with fresh data
-    }
-
-    #[Computed]
-    public function cartCount()
-    {
-        return $this->cartItems->count();
     }
 
     #[Computed]
@@ -88,7 +80,10 @@ class CartPage extends Component
 
     public function removeItem($itemId)
     {
-        $item = CartItem::findOrFail($itemId);
+        $item = CartItem::find($itemId);
+        if (empty($item)) {
+            return;
+        }
         $this->authorizeItem($item);
 
         $item->delete();
@@ -99,8 +94,14 @@ class CartPage extends Component
 
     public function clearCart()
     {
-        $this->currentCartQuery()->delete();
+        $currentCart = $this->currentCartQuery();
+        if (! $currentCart) {
+            return;
+        }
+        $currentCart->delete();
+
         $this->dispatch('notify', type: 'success', message: 'Cart cleared successfully.');
+        $this->dispatch('cart-updated');
     }
 
     private function currentCartQuery()
