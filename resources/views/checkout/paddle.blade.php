@@ -52,7 +52,7 @@
             <div class="w-full max-w-md bg-amber-50/80 border border-amber-200/80 rounded-2xl p-4 text-left shadow-sm">
                 <div class="flex gap-3">
                     <div
-                        class="flex-shrink-0 w-8 h-8 rounded-xl bg-amber-100 flex items-center justify-center text-amber-600 mt-0.5">
+                        class="shrink-0 w-8 h-8 rounded-xl bg-amber-100 flex items-center justify-center text-amber-600 mt-0.5">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />

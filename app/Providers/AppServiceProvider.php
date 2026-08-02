@@ -32,13 +32,16 @@ class AppServiceProvider extends ServiceProvider
         Blade::if('active', function ($routeName) {
             return Route::is($routeName);
         });
-
         Order::observe(OrderObserver::class);
 
         $this->registerRouteBindings();
 
         CreateAction::configureUsing(function ($action) {
             return $action->slideOver();
+        });
+
+        Gate::before(function ($user, $ability) {
+            return $user->hasRole('super_admin') ? true : null;
         });
 
         Gate::define('viewPulse', function (User $user) {
@@ -132,7 +135,7 @@ class AppServiceProvider extends ServiceProvider
             ])->findOrFail($id);
 
         });
-
+        // orders addresses
         Route::bind('user', function ($id) {
             return User::with(['addresses'])->findOrFail($id);
         });

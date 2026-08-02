@@ -81,6 +81,7 @@ class CartPage extends Component
     public function removeItem($itemId)
     {
         $item = CartItem::find($itemId);
+
         if (empty($item)) {
             return;
         }
