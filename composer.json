@@ -8,8 +8,8 @@
     "require": {
         "php": "^8.3",
         "ext-bcmath": "*",
-        "ext-gd": "*",
         "ext-exif": "*",
+        "ext-gd": "*",
         "ext-intl": "*",
         "ext-zip": "*",
         "bezhansalleh/filament-shield": "^4.2",
@@ -20,6 +20,7 @@
         "intervention/image-laravel": "^4.0",
         "laravel/cashier-paddle": "^2.8",
         "laravel/framework": "^13.0",
+        "laravel/pulse": "^1.7",
         "laravel/tinker": "^3.0",
         "livewire/livewire": "^4.3"
     },

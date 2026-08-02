@@ -24,7 +24,7 @@ class OrderObserver
         if ($order->wasChanged('status') && $order->status === OrderStatus::Refunded) {
             return;
         } elseif ($order->wasChanged('status') && $order->status === OrderStatus::Delivered) {
-            // test
+
             if ($order->payment->method === 'cash on delivery') {
 
                 $order->payment->updateOrCreate(
