@@ -161,7 +161,7 @@ class OrdersTable
                             if ($data['status'] === OrderStatus::Cancelled) {
                                 $updateData['refund_reason'] = $data['refund_reason'] ?? null;
 
-                                if (! in_array($record->status, [OrderStatus::Cancelled, OrderStatus::Refunded])) {
+                                if (! in_array($record->status, [OrderStatus::Cancelled, OrderStatus::Refunded, OrderStatus::Pending])) {
                                     foreach ($record->variants as $variant) {
                                         $variant->increment('stock_quantity', $variant->pivot->quantity);
                                     }

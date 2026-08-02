@@ -161,7 +161,6 @@ class CheckoutController extends Controller
         if ($data['payment_method'] === 'cod') {
 
             $this->clearCart();
-            $order->update(['status' => OrderStatus::Processing]);
 
             $user = $order->user;
             $user->notify(new OrderCreatedNotification($order));

@@ -14,7 +14,7 @@ enum OrderStatus: string implements HasColor, HasIcon, HasLabel
     case Delivered = 'delivered';
     case Refunded = 'refunded';
 
-    case Cancelled = 'cancelled'; // <--- ADD THIS
+    case Cancelled = 'cancelled';
 
     public function getLabel(): ?string
     {
