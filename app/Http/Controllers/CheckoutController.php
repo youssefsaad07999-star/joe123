@@ -36,7 +36,7 @@ class CheckoutController extends Controller
 
         $shipping_methods = ShippingMethod::all();
 
-        $countries = Country::query()->where('is_active', true)->get();
+        $countries = Country::query()->active()->get();
 
         $free_shipping_threshold = ShopSetting::get('free_shipping_threshold');
 
@@ -152,15 +152,14 @@ class CheckoutController extends Controller
             if ($cartItemIdToRemove) {
                 CartItem::destroy($cartItemIdToRemove);
             }
-            // dd($cartItemIdToRemove);
 
             return redirect()->route('cart.index')->with('error', $e->getMessage());
         }
 
+        $this->clearCart();
+
         // ── Cash on Delivery — no payment gateway ─────────────────────────
         if ($data['payment_method'] === 'cod') {
-
-            $this->clearCart();
 
             $user = $order->user;
             $user->notify(new OrderCreatedNotification($order));

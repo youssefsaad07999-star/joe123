@@ -28,8 +28,8 @@ class PruneAbandonedCarts extends Command
         $this->info('Initiating abandoned guest cart pruning routine...');
 
         $deletedCount = DB::table('cart_items')
-            ->whereNull('user_id') // Targets only guest carts
-            ->where('updated_at', '<', now()->subDays(30)) // Older than 30 days threshold
+            ->whereNull('user_id')
+            ->where('updated_at', '<', now()->subDays(30))
             ->delete();
 
         $this->info("Process completed successfully. Swept and purged {$deletedCount} abandoned line items from storage.");

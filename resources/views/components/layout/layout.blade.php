@@ -29,7 +29,7 @@
     <livewire:cart-page :is-sidebar="true" />
 
     {{-- NAV --}}
-    <x-layout.nav />
+    <livewire:navbar />
 
     {{-- MAIN CONTENT --}}
     <main class="grow">

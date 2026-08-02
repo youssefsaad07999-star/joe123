@@ -14,10 +14,18 @@ class CartPage extends Component
 {
     public bool $isSidebar = false;
 
+    public $cartCount;
+
     #[On('cart-updated')]
     public function refreshCart()
     {
         // Simply triggers a visual re-render with fresh data
+    }
+
+    #[Computed]
+    public function cartCount()
+    {
+        return $this->cartItems->count();
     }
 
     #[Computed]
@@ -147,5 +155,6 @@ class CartPage extends Component
         }
 
         $this->dispatch('notify', type: 'success', message: 'Item Added To the cart');
+        $this->dispatch('cart-updated');
     }
 }

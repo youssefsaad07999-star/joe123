@@ -67,21 +67,27 @@
 
             {{-- 2. CANCELLED STATE: Display Cancelled Alert Card --}}
         @elseif (($order->status?->value ?? $order->status) === 'cancelled')
-            <div class="bg-gray-50 border border-gray-200 rounded-2xl p-6 mb-6 text-gray-700">
-                <div class="flex items-center gap-3">
-                    <svg class="w-6 h-6 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
-                    <div>
-                        <h4 class="font-semibold text-sm">Order Cancelled</h4>
-                        @if ($order->refund_reason)
-                            <p class="text-xs text-gray-500 mt-0.5">{{ $order->refund_reason }}</p>
-                        @else
-                            <p class="text-xs text-gray-500 mt-0.5">This order was cancelled and is no longer being
-                                processed.</p>
-                        @endif
+            <div class="bg-gray-900 text-white rounded-2xl p-5 mb-6 shadow-md relative overflow-hidden">
+                <!-- Decorative background glow -->
+                <div
+                    class="absolute -right-8 -bottom-8 w-24 h-24 bg-red-500/10 rounded-full blur-xl pointer-events-none">
+                </div>
 
+                <div class="flex items-start justify-between gap-4 relative z-10">
+                    <div class="flex items-start gap-3.5">
+                        <div
+                            class="flex-shrink-0 w-10 h-10 rounded-xl bg-red-500/20 text-red-400 flex items-center justify-center border border-red-500/30">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" />
+                            </svg>
+                        </div>
+                        <div>
+                            <h4 class="font-semibold text-sm text-white">Order Cancelled</h4>
+                            <p class="text-xs text-gray-400 mt-1 leading-relaxed">
+                                {{ $order->refund_reason ?? 'This order was cancelled and is no longer being processed.' }}
+                            </p>
+                        </div>
                     </div>
                 </div>
             </div>

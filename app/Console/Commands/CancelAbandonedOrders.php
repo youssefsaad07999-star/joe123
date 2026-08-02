@@ -28,7 +28,6 @@ class CancelAbandonedOrders extends Command
             ->with('variants')
             ->get();
 
-        // dd($expiredOrders->isEmpty());
         if ($expiredOrders->isEmpty()) {
             $this->info('No abandoned orders found.');
 

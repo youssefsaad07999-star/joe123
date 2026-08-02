@@ -173,15 +173,16 @@ class AppServiceProvider extends ServiceProvider
         });
 
         View::composer('components.layout.layout', function ($view) {
-            $query = CartItem::query();
+            // $query = CartItem::query();
 
-            $cartItems = auth()->check()
-            ? $query->forUser(auth()->id())->with('variant.product.images')->get()
-            : $query->forSession(session()->getId())->with('variant.product.images')->get();
+            // $cartItems = auth()->check()
+            // ? $query->forUser(auth()->id())->with('variant.product.images')->get()
+            // : $query->forSession(session()->getId())->with('variant.product.images')->get();
 
-            $cartTotal = $cartItems->sum->line_total;
+            // $cartTotal = $cartItems->sum->line_total;
+            // $cartCount = $cartItems->count();
 
-            $view->with(compact('cartItems', 'cartTotal'));
+            // $view->with(compact('cartItems', 'cartTotal', 'cartCount'));
         });
 
         View::composer('components.layout.nav', function ($view) {

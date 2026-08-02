@@ -15,7 +15,6 @@ use App\Http\Controllers\ProductControllers\CartItemController;
 use App\Http\Controllers\RegisteredUserController;
 use App\Http\Controllers\SessionsController;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
-use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Route;
 use Laravel\Paddle\Http\Controllers\WebhookController;
 
@@ -138,24 +137,3 @@ Route::prefix('{gender}')
         Route::get('/{category}/{subcategory}/{product}', [ProductController::class, 'productShow'])
             ->name('product.show');
     });
-
-Route::get('/migrate-seed', function () {
-    Artisan::call('migrate:fresh', ['--seed' => true]);
-
-    return 'Migration and seeding completed successfully.';
-});
-
-Route::get('/migrate', function () {
-    Artisan::call('migrate');
-
-    return 'Migration and seeding completed successfully.';
-});
-
-Route::get('/clear', function () {
-    Artisan::call('config:cache');
-    Artisan::call('cache:clear');
-    Artisan::call('view:clear');
-    Artisan::call('route:clear');
-
-    return 'Caches cleared and config cached successfully.';
-});

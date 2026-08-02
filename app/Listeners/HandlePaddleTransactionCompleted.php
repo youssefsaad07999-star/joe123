@@ -2,7 +2,6 @@
 
 namespace App\Listeners;
 
-use App\Models\CartItem;
 use App\Models\Order;
 use App\Models\Payment;
 use App\Notifications\OrderCreatedNotification;
@@ -64,8 +63,5 @@ class HandlePaddleTransactionCompleted
                 'transaction_id' => $payload['data']['id'] ?? null,
             ]
         );
-
-        // Clear the user's cart
-        CartItem::forUser($order->user_id)->delete();
     }
 }

@@ -1,4 +1,58 @@
-@props(['cartCount' => null])
+<?php
+
+use App\Models\CartItem;
+use App\Models\Category;
+use Livewire\Attributes\Computed;
+use Livewire\Attributes\On;
+use Livewire\Component;
+
+new class extends Component {
+    public $navGenders;
+
+    #[On('cart-updated')]
+    public function refreshCart()
+    {
+        // Simply triggers a visual re-render with fresh data
+    }
+
+    #[Computed]
+    public function cartCount()
+    {
+        return $this->currentCartQuery()->count();
+    }
+
+    public function mount()
+    {
+        $this->navGenders = Category::genders()
+            ->active()
+            ->with([
+                'children' => function ($query) {
+                    $query->active()->with([
+                        'children' => function ($subQuery) {
+                            $subQuery->active();
+                        },
+                    ]);
+                },
+            ])
+            ->get();
+    }
+
+    // public function cartItems()
+    // {
+    //     return $this->currentCartQuery()
+    //         ->with(['variant.product', 'variant.size', 'variant.color', 'variant.product.images'])
+    //         ->get();
+    // }
+
+    private function currentCartQuery()
+    {
+        $query = CartItem::query();
+
+        return auth()->check() ? $query->forUser(auth()->id()) : $query->forSession(session()->getId());
+    }
+};
+?>
+
 <header class="sticky top-0 z-30 bg-[#1C1C1C] text-white">
     <nav class="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
 
@@ -52,7 +106,7 @@ text-[#C85C6E]
                                         :class="subOpen ? 'bg-[#F7F3EE] text-[#C85C6E]' : ''">
                                         {{ $navCategory->name }}
                                         @if ($navCategory->children->count() > 0)
-                                            <svg class="w-3.5 h-3.5 opacity-50 flex-shrink-0 ml-4" fill="none"
+                                            <svg class="w-3.5 h-3.5 opacity-50 shrink-0 ml-4" fill="none"
                                                 stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                                     d="M9 5l7 7-7 7" />
@@ -154,12 +208,12 @@ text-[#C85C6E]
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
                         d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
                 </svg>
-                @if (isset($cartCount) && $cartCount > 0)
+                @if (isset($this->cartCount) && $this->cartCount > 0)
                     <span
                         class="absolute -top-0.5 -right-0.5 bg-[#C85C6E] text-white text-[10px] font-bold
                                                                                                                      rounded-full flex items-center justify-center"
                         style="min-width:18px;min-height:18px;padding:0 4px;">
-                        {{ $cartCount }}
+                        {{ $this->cartCount }}
                     </span>
                 @endif
             </button>
