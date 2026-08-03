@@ -21,31 +21,28 @@ class ProductController extends Controller
 
     public function genderIndex(Category $gender)
     {
-        // Direct category children (depth = 'category')
-        $categories = $gender->children()->with('children')->get();
-
         // All products sitting under this gender
-        $products = Product::with(['variants', 'images', 'primaryImage', 'globalImages'])
+        $products = Product::with(['variants', 'images'])
             ->isActive()
             ->whereHas('category.parent.parent', fn ($q) => $q->where('id', $gender->id))
             ->with('category.parent.parent')
             ->latest()
             ->paginate(16);
 
-        return view('product.gender.index', compact('gender', 'categories', 'products'));
+        return view('product.gender.index', compact('gender', 'products'));
     }
 
     public function categoryShow(Category $gender, Category $category)
     {
-        $subcategories = $category->children()->get();
+        // $subcategories = $category->children()->get();
 
-        $products = Product::with(['variants.color', 'variants.size', 'images', 'primaryImage'])
+        $products = Product::with(['variants.color', 'variants.size', 'images'])
             ->isActive()
             ->whereHas('category', fn ($q) => $q->where('parent_id', $category->id))
             ->latest()
             ->paginate(16);
 
-        return view('product.category.show', compact('gender', 'category', 'subcategories', 'products'));
+        return view('product.category.show', compact('gender', 'category', 'products'));
 
     }
 
@@ -53,7 +50,7 @@ class ProductController extends Controller
     {
         $subcategories = $category->children()->get();
 
-        $products = Product::with(['variants.color', 'variants.size', 'images', 'primaryImage'])
+        $products = Product::with(['variants.color', 'variants.size', 'images'])
             ->isActive()
             ->where('category_id', $subcategory->id)
             ->latest()

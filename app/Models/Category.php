@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Facades\Cache;
 
 class Category extends Model
 {
@@ -68,8 +69,8 @@ class Category extends Model
 
     protected static function booted(): void
     {
-        static::saved(fn () => cache()->forget('nav_genders'));
-        static::deleted(fn () => cache()->forget('nav_genders'));
+        static::saved(fn () => Cache::forget('nav-genders'));
+        static::deleted(fn () => Cache::forget('nav-genders'));
     }
 
     public function getFullPathAttribute(): string

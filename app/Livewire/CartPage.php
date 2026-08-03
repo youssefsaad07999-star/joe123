@@ -6,26 +6,21 @@ use App\Models\CartItem;
 use App\Models\ProductVariant;
 use App\Models\ShippingMethod;
 use App\Models\ShopSetting;
+use App\Traits\HasCart;
 use Livewire\Attributes\Computed;
 use Livewire\Attributes\On;
 use Livewire\Component;
 
 class CartPage extends Component
 {
+    use HasCart;
+
     public bool $isSidebar = false;
 
     #[On('cart-updated')]
     public function refreshCart()
     {
         // Simply triggers a visual re-render with fresh data
-    }
-
-    #[Computed]
-    public function cartItems()
-    {
-        return $this->currentCartQuery()
-            ->with(['variant.product', 'variant.size', 'variant.color', 'variant.product.images'])
-            ->get();
     }
 
     #[Computed]
@@ -105,12 +100,12 @@ class CartPage extends Component
         $this->dispatch('cart-updated');
     }
 
-    private function currentCartQuery()
-    {
-        $query = CartItem::query();
+    // private function currentCartQuery()
+    // {
+    //     $query = CartItem::query();
 
-        return auth()->check() ? $query->forUser(auth()->id()) : $query->forSession(session()->getId());
-    }
+    //     return auth()->check() ? $query->forUser(auth()->id()) : $query->forSession(session()->getId());
+    // }
 
     private function authorizeItem(CartItem $item): void
     {

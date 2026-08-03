@@ -20,7 +20,7 @@
         {{-- Category Horizontal Navigation Scroller --}}
         <nav class="flex items-stretch border-t border-b border-gray-200/50 -mx-6 overflow-x-auto scrollbar-none md:mx-0"
             aria-label="Collection Categories">
-            @foreach ($categories as $category)
+            @foreach ($gender->children as $category)
                 <a href="{{ route('gender.category.show', [
                     'gender' => $gender->slug,
                     'category' => $category->slug,

@@ -31,7 +31,7 @@
                 All {{ $category->name }}
             </a>
 
-            @foreach ($subcategories as $subcategory)
+            @foreach ($category->children as $subcategory)
                 <a href="{{ route('gender.subcategory.show', ['gender' => $gender->slug, 'category' => $category->slug, 'subcategory' => $subcategory->slug]) }}"
                     class="px-5 py-2.5 rounded-full text-xs font-medium uppercase tracking-wider border transition-all duration-300 shrink-0 select-none
                         {{ request()->routeIs('*subcategory*') && request()->route('subcategory')?->id === $subcategory->id

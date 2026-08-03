@@ -24,9 +24,11 @@
                         {{-- Product Image Thumbnail --}}
                         <div class="w-24 h-28 rounded-xl overflow-hidden bg-gray-100 shrink-0">
                             @php
-                                $img = $item->variant->product->images
-                                    ->where('color_id', $item->variant->color_id)
-                                    ->first();
+                                $img =
+                                    $item->variant->product->images
+                                        ->where('color_id', $item->variant->color_id)
+                                        ->first() ?? $item->variant->product->primaryImage;
+                                dd($img);
                             @endphp
                             @if ($img)
                                 <img src="{{ asset('storage/' . $img->image_path) }}" class="w-full h-full object-cover"

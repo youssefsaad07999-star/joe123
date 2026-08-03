@@ -8,7 +8,6 @@ use App\Models\Product;
 use App\Models\User;
 use App\Observers\OrderObserver;
 use Filament\Actions\CreateAction;
-use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
@@ -28,24 +27,6 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-
-        Blade::if('active', function ($routeName) {
-            // If we can resolve the URL for the route name (e.g. route('home') -> 'http://localhost/')
-            try {
-                $targetUrl = route($routeName);
-                $currentUrl = request()->routeIs('livewire.update')
-                    ? request()->header('Referer')
-                    : request()->url();
-
-                // Strip query parameters for comparison
-                $cleanTarget = strtok($targetUrl, '?');
-                $cleanCurrent = strtok($currentUrl, '?');
-
-                return rtrim($cleanTarget, '/') === rtrim($cleanCurrent, '/');
-            } catch (\Throwable $e) {
-                return false;
-            }
-        });
 
         Order::observe(OrderObserver::class);
 
@@ -72,6 +53,7 @@ class AppServiceProvider extends ServiceProvider
             return Category::genders()
                 ->active()
                 ->where('slug', $slug)
+                ->with('children.children')
                 ->firstOrFail();
         });
 
@@ -99,6 +81,7 @@ class AppServiceProvider extends ServiceProvider
                 ->active()
                 ->where('slug', $slug)
                 ->where('parent_id', $gender->id)
+                ->with(['parent', 'children'])
                 ->first();
         });
 
@@ -133,7 +116,7 @@ class AppServiceProvider extends ServiceProvider
         });
 
         Route::bind('product', function ($slug) {
-            return Product::with(['variants.size', 'variants.color', 'images', 'primaryImage', 'fit', 'brand'])
+            return Product::with(['variants.size', 'variants.color', 'images', 'fit', 'brand'])
                 ->where('slug', $slug)
                 ->first();
         });

@@ -12,12 +12,12 @@
         <div class="relative aspect-[3/4] overflow-hidden bg-gray-100">
             @php
                 // Just grab the first image object safely. Do NOT read ->image_path here!
-                $image = $product->primaryImage ? $product->globalImages->first() : null;
+                $image = $product->primaryImage?->image_path;
             @endphp
 
             {{-- Check if the image object actually exists before attempting to read its properties --}}
             @if ($image)
-                <img src="{{ asset('storage/' . $image->image_path) }}" alt="{{ $product->name }}"
+                <img src="{{ asset('storage/' . $image) }}" alt="{{ $product->name }}"
                     class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700">
             @else
                 <div class="w-full h-full flex items-center justify-center bg-gradient-to-br from-gray-100 to-gray-200">

@@ -35,17 +35,15 @@ class Product extends Model
         return $this->hasMany(ProductImage::class);
     }
 
-    public function globalImages()
+    public function getPrimaryImageAttribute()
     {
-        return $this->hasMany(ProductImage::class)
-            ->whereNull('color_id')
-            ->orderBy('sort_order');
-    }
+        // If 'images' relation is already loaded, filter in PHP memory (0 extra SQL queries!)
+        if ($this->relationLoaded('images')) {
+            return $this->images->firstWhere('is_primary', true) ?? $this->images->first();
+        }
 
-    public function primaryImage()
-    {
-        return $this->hasMany(ProductImage::class)
-            ->where('is_primary', true);
+        // Fallback if 'images' was not loaded
+        return $this->images()->where('is_primary', true)->first();
     }
 
     public function variants(): HasMany

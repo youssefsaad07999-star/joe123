@@ -5,39 +5,48 @@ use App\Models\Category;
 use Livewire\Attributes\Computed;
 use Livewire\Attributes\On;
 use Livewire\Component;
+use App\Traits\HasCart;
 
 new class extends Component {
+    use HasCart;
+
     #[On('cart-updated')]
     public function refreshCart()
     {
         // Simply triggers a visual re-render with fresh data
     }
 
-    #[Computed]
-    public function cartCount()
-    {
-        return $this->currentCartQuery()->count();
-    } // ⚡ Computed property avoids heavy JS payloads
+    // #[Computed]
+    // public function cartCount()
+    // {
+    //     return $this->currentCartQuery()->count();
+    // } // ⚡ Computed property avoids heavy JS payloads
 
     #[Computed]
     public function navGenders()
     {
-        return Category::genders()
-            ->active()
-            ->with([
-                'children' => fn($query) => $query->active()->with([
-                    'children' => fn($subQuery) => $subQuery->active(),
-                ]),
-            ])
-            ->get();
+        $cached = Cache::remember('nav-genders', now()->addHours(6), function () {
+            return Category::genders()
+                ->active()
+                ->with([
+                    'children' => fn($query) => $query->active()->with([
+                        'children' => fn($subQuery) => $subQuery->active(),
+                    ]),
+                ])
+                ->get()
+                ->toArray(); // <-- plain array, no Eloquent objects cached
+        });
+
+        // Convert back to objects so Blade's $navGender->name syntax still works
+        return json_decode(json_encode($cached));
     }
 
-    private function currentCartQuery()
-    {
-        $query = CartItem::query();
+    // private function currentCartQuery()
+    // {
+    //     $query = CartItem::query();
 
-        return auth()->check() ? $query->forUser(auth()->id()) : $query->forSession(session()->getId());
-    }
+    //     return auth()->check() ? $query->forUser(auth()->id()) : $query->forSession(session()->getId());
+    // }
 };
 ?>
 
@@ -64,7 +73,7 @@ new class extends Component {
                 <div class="relative" x-data="{ open: false }" @mouseenter="open = true" @mouseleave="open = false">
 
                     {{-- Gender link --}}
-                    <a href="{{ route('gender.index', $navGender) }}"
+                    <a href="{{ route('gender.index', $navGender->slug) }}"
                         class='px-4 py-2 text-sm  tracking-wide hover:text-[#C85C6E] transition-colors flex items-center gap-1',
                         wire:current="text-[#C85C6E] font-bold">
                         {{ $navGender->name }}
@@ -89,13 +98,13 @@ new class extends Component {
                                 <div class="relative" x-data="{ subOpen: false }" @mouseenter="subOpen = true"
                                     @mouseleave="subOpen = false">
 
-                                    <a href="{{ route('gender.category.show', [$navGender, $navCategory]) }}"
+                                    <a href="{{ route('gender.category.show', [$navGender->slug, $navCategory->slug]) }}"
                                         class="flex items-center justify-between px-4 py-2.5 text-sm
                                                                                                                                                                                                                        hover:bg-[#F7F3EE] hover:text-[#C85C6E] transition-colors"
                                         :class="subOpen ? 'bg-[#F7F3EE] text-[#C85C6E]' : ''"
                                         wire:current="text-[#C85C6E] font-bold">
                                         {{ $navCategory->name }}
-                                        @if ($navCategory->children->count() > 0)
+                                        @if (count($navCategory->children) > 0)
                                             <svg class="w-3.5 h-3.5 opacity-50 shrink-0 ml-4" fill="none"
                                                 stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -105,7 +114,7 @@ new class extends Component {
                                     </a>
 
                                     {{-- Level 2 flyout — subcategories --}}
-                                    @if ($navCategory->children->count() > 0)
+                                    @if (count($navCategory->children) > 0)
                                         <div x-show="subOpen" x-transition:enter="transition ease-out duration-100"
                                             x-transition:enter-start="opacity-0 translate-x-1"
                                             x-transition:enter-end="opacity-100 translate-x-0"
@@ -118,14 +127,14 @@ new class extends Component {
                                             <div
                                                 class="bg-white text-[#1C1C1C] rounded-xl shadow-xl py-2 border border-gray-100">
                                                 {{-- "All [category]" shortcut --}}
-                                                <a href="{{ route('gender.category.show', [$navGender, $navCategory], false) }}"
+                                                <a href="{{ route('gender.category.show', [$navGender->slug, $navCategory->slug]) }}"
                                                     class="block px-4 py-2 text-xs font-medium text-gray-400
                                                                                                                                                                                                                                                                                                                        hover:bg-[#F7F3EE] hover:text-[#C85C6E] transition-colors
                                                                                                                                                                                                                                                                                                                        border-b border-gray-100 mb-1">
                                                     All {{ $navCategory->name }}
                                                 </a>
                                                 @foreach ($navCategory->children as $navSubcategory)
-                                                    <a href="{{ route('gender.subcategory.show', [$navGender, $navCategory, $navSubcategory], false) }}"
+                                                    <a href="{{ route('gender.subcategory.show', [$navGender->slug, $navCategory->slug, $navSubcategory->slug]) }}"
                                                         class="block px-4 py-2 text-sm hover:bg-[#F7F3EE] hover:text-[#C85C6E] transition-colors"
                                                         wire:current="text-[#C85C6E] font-bold">
                                                         {{ $navSubcategory->name }}
@@ -234,7 +243,7 @@ new class extends Component {
                     <div class="w-full text-left py-2.5 text-sm  hover:text-[#C85C6E] transition-colors
                               flex items-center justify-between"
                         @click="gOpen = !gOpen">
-                        <a href="{{ route('gender.index', $navGender) }}" @click.prevent
+                        <a href="{{ route('gender.index', $navGender->slug) }}" @click.prevent
                             wire:current="text-[#C85C6E] font-bold">
                             {{ $navGender->name }}
                         </a>
@@ -248,7 +257,7 @@ new class extends Component {
 
 
                     <div x-show="gOpen" class="pl-3 border-l border-white/10 ml-1 space-y-0.5" style="display:none;">
-                        <a href="{{ route('gender.index', $navGender) }}"
+                        <a href="{{ route('gender.index', $navGender->slug) }}"
                             class="block py-1 pl-2 text-xs font-medium text-gray-600 border-l-2 border-[#C85C6E] hover:text-[#C85C6E] transition-colors"
                             wire:current="text-[#C85C6E] font-semibold">
                             All {{ $navGender->name }}
@@ -258,14 +267,14 @@ new class extends Component {
 
                                 {{-- Category row --}}
 
-                                <a href="{{ route('gender.category.show', [$navGender, $navCategory]) }}"
+                                <a href="{{ route('gender.category.show', [$navGender->slug, $navCategory->slug]) }}"
                                     @click="cOpen = !cOpen"
                                     class="w-full text-left py-2 text-sm hover:text-[#C85C6E] transition-colors flex items-center justify-between"
                                     @click.prevent wire:current="text-[#C85C6E] font-bold">
 
 
                                     {{ $navCategory->name }}
-                                    @if ($navCategory->children->count() > 0)
+                                    @if (count($navCategory->children) > 0)
                                         <svg class="w-3.5 h-3.5 transition-transform"
                                             :class="cOpen ? 'rotate-180' : ''" fill="none" stroke="currentColor"
                                             viewBox="0 0 24 24">
@@ -277,12 +286,12 @@ new class extends Component {
 
 
                                 {{-- Subcategory list --}}
-                                @if ($navCategory->children->count() > 0)
+                                @if (count($navCategory->children) > 0)
                                     <div x-show="cOpen" class="pl-3 border-l border-white/10 ml-1 pb-1"
                                         style="display:none;">
                                         <a href="{{ route('gender.category.show', [
-                                            'gender' => $navGender,
-                                            'category' => $navCategory,
+                                            'gender' => $navGender->slug,
+                                            'category' => $navCategory->slug,
                                         ]) }}"
                                             class="block py-1.5 pl-2 text-xs font-medium text-gray-600 border-l-2 border-[#C85C6E] hover:text-[#C85C6E] transition-colors">
                                             All {{ $navCategory->name }}
@@ -291,9 +300,9 @@ new class extends Component {
                                             <div class="text-gray-400">
 
                                                 <a href="{{ route('gender.subcategory.show', [
-                                                    'gender' => $navGender,
-                                                    'category' => $navCategory,
-                                                    'subcategory' => $navSubcategory,
+                                                    'gender' => $navGender->slug,
+                                                    'category' => $navCategory->slug,
+                                                    'subcategory' => $navSubcategory->slug,
                                                 ]) }}"
                                                     class="block py-1.5 text-sm hover:text-[#C85C6E] transition-colors"
                                                     wire:current="text-[#C85C6E] font-bold">

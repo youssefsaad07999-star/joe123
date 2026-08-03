@@ -23,9 +23,9 @@
                 <div wire:key="sidebar-item-{{ $item->id }}" class="flex gap-4 py-4 border-b border-gray-100">
                     <div class="w-20 h-24 bg-gray-100 rounded-lg overflow-hidden shrink-0">
                         @php
-                            $img = $item->variant->product->images
-                                ->where('color_id', $item->variant->color_id)
-                                ->first();
+                            $img =
+                                $item->variant?->product?->images->firstWhere('color_id', $item->variant->color_id) ??
+                                $item->variant?->product?->primaryImage;
                         @endphp
                         @if ($img)
                             <img src="{{ asset('storage/' . $img->image_path) }}" class="w-full h-full object-cover"
