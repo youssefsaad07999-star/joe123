@@ -1,4 +1,3 @@
-@props(['cartCount' => null])
 <header class="sticky top-0 z-30 bg-[#1C1C1C] text-white">
     <nav class="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
 
@@ -22,8 +21,12 @@ text-[#C85C6E]
                 <div class="relative" x-data="{ open: false }" @mouseenter="open = true" @mouseleave="open = false">
 
                     {{-- Gender link --}}
-                    <a href="{{ route('gender.index', $navGender, false) }}"
-                        class="px-4 py-2 text-sm font-light tracking-wide hover:text-[#C85C6E] transition-colors flex items-center gap-1">
+                    <a href="{{ route('gender.index', $navGender, false) }}" @class([
+                        'px-4 py-2 text-sm font-light tracking-wide hover:text-[#C85C6E] transition-colors flex items-center gap-1',
+                        'text-[#C85C6E]' =>
+                            request()->routeIs('gender.index') &&
+                            request()->route('gender') == $navGender->slug,
+                    ])>
                         {{ $navGender->name }}
                         <svg class="w-3.5 h-3.5 opacity-60 transition-transform duration-200"
                             :class="open ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -52,7 +55,7 @@ text-[#C85C6E]
                                         :class="subOpen ? 'bg-[#F7F3EE] text-[#C85C6E]' : ''">
                                         {{ $navCategory->name }}
                                         @if ($navCategory->children->count() > 0)
-                                            <svg class="w-3.5 h-3.5 opacity-50 flex-shrink-0 ml-4" fill="none"
+                                            <svg class="w-3.5 h-3.5 opacity-50 shrink-0 ml-4" fill="none"
                                                 stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                                     d="M9 5l7 7-7 7" />

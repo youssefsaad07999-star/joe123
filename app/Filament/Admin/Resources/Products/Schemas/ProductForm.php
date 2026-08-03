@@ -133,7 +133,8 @@ class ProductForm
                                                             ->relationship('fit', 'name')
                                                             ->searchable()
                                                             ->preload()
-                                                            ->nullable(),
+                                                            ->nullable()
+                                                            ->getOptionLabelFromRecordUsing(fn ($record) => ucfirst($record->name)),
                                                     ]),
                                             ]),
                                     ]),

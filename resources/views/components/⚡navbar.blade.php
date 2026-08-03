@@ -7,8 +7,6 @@ use Livewire\Attributes\On;
 use Livewire\Component;
 
 new class extends Component {
-    public $navGenders;
-
     #[On('cart-updated')]
     public function refreshCart()
     {
@@ -19,30 +17,20 @@ new class extends Component {
     public function cartCount()
     {
         return $this->currentCartQuery()->count();
-    }
+    } // ⚡ Computed property avoids heavy JS payloads
 
-    public function mount()
+    #[Computed]
+    public function navGenders()
     {
-        $this->navGenders = Category::genders()
+        return Category::genders()
             ->active()
             ->with([
-                'children' => function ($query) {
-                    $query->active()->with([
-                        'children' => function ($subQuery) {
-                            $subQuery->active();
-                        },
-                    ]);
-                },
+                'children' => fn($query) => $query->active()->with([
+                    'children' => fn($subQuery) => $subQuery->active(),
+                ]),
             ])
             ->get();
     }
-
-    // public function cartItems()
-    // {
-    //     return $this->currentCartQuery()
-    //         ->with(['variant.product', 'variant.size', 'variant.color', 'variant.product.images'])
-    //         ->get();
-    // }
 
     private function currentCartQuery()
     {
@@ -65,19 +53,20 @@ new class extends Component {
         {{-- DESKTOP LINKS --}}
         <div class="hidden md:flex items-center gap-1">
             <a href="/"
-                class="px-4 py-2 text-sm font-light tracking-wide hover:text-[#C85C6E] transition-colors
-                      @active('home')
-text-[#C85C6E]
-@endactive">
+                class="px-4 py-2 text-sm tracking-wide hover:text-[#C85C6E] transition-colors
+                      "
+                wire:current.exact="text-[#C85C6E] font-bold">
                 Home
             </a>
 
-            @foreach ($navGenders as $navGender)
+
+            @foreach ($this->navGenders as $navGender)
                 <div class="relative" x-data="{ open: false }" @mouseenter="open = true" @mouseleave="open = false">
 
                     {{-- Gender link --}}
-                    <a href="{{ route('gender.index', $navGender, false) }}"
-                        class="px-4 py-2 text-sm font-light tracking-wide hover:text-[#C85C6E] transition-colors flex items-center gap-1">
+                    <a href="{{ route('gender.index', $navGender) }}"
+                        class='px-4 py-2 text-sm  tracking-wide hover:text-[#C85C6E] transition-colors flex items-center gap-1',
+                        wire:current="text-[#C85C6E] font-bold">
                         {{ $navGender->name }}
                         <svg class="w-3.5 h-3.5 opacity-60 transition-transform duration-200"
                             :class="open ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -100,10 +89,11 @@ text-[#C85C6E]
                                 <div class="relative" x-data="{ subOpen: false }" @mouseenter="subOpen = true"
                                     @mouseleave="subOpen = false">
 
-                                    <a href="{{ route('gender.category.show', [$navGender, $navCategory], false) }}"
+                                    <a href="{{ route('gender.category.show', [$navGender, $navCategory]) }}"
                                         class="flex items-center justify-between px-4 py-2.5 text-sm
                                                                                                                                                                                                                        hover:bg-[#F7F3EE] hover:text-[#C85C6E] transition-colors"
-                                        :class="subOpen ? 'bg-[#F7F3EE] text-[#C85C6E]' : ''">
+                                        :class="subOpen ? 'bg-[#F7F3EE] text-[#C85C6E]' : ''"
+                                        wire:current="text-[#C85C6E] font-bold">
                                         {{ $navCategory->name }}
                                         @if ($navCategory->children->count() > 0)
                                             <svg class="w-3.5 h-3.5 opacity-50 shrink-0 ml-4" fill="none"
@@ -136,8 +126,8 @@ text-[#C85C6E]
                                                 </a>
                                                 @foreach ($navCategory->children as $navSubcategory)
                                                     <a href="{{ route('gender.subcategory.show', [$navGender, $navCategory, $navSubcategory], false) }}"
-                                                        class="block px-4 py-2 text-sm
-                                                                                                                                                                                                                                                                                                                                                                                                               hover:bg-[#F7F3EE] hover:text-[#C85C6E] transition-colors">
+                                                        class="block px-4 py-2 text-sm hover:bg-[#F7F3EE] hover:text-[#C85C6E] transition-colors"
+                                                        wire:current="text-[#C85C6E] font-bold">
                                                         {{ $navSubcategory->name }}
                                                     </a>
                                                 @endforeach
@@ -151,18 +141,12 @@ text-[#C85C6E]
                 </div>
             @endforeach
 
-            <a href="/about"
-                class="px-4 py-2 text-sm font-light tracking-wide hover:text-[#C85C6E] transition-colors
-                      @active('about')
-text-[#C85C6E]
-@endactive">
+            <a href="/about" class="px-4 py-2 text-sm tracking-wide hover:text-[#C85C6E] transition-colors"
+                wire:current.exact="text-[#C85C6E] font-bold">
                 About
             </a>
-            <a href="/contact"
-                class="px-4 py-2 text-sm font-light tracking-wide hover:text-[#C85C6E] transition-colors
-                      @active('contact')
-text-[#C85C6E]
-@endactive">
+            <a href="/contact" class="px-4 py-2 text-sm tracking-wide hover:text-[#C85C6E] transition-colors"
+                wire:current.exact="text-[#C85C6E] font-bold">
                 Contact
             </a>
         </div>
@@ -192,11 +176,13 @@ text-[#C85C6E]
             @else
                 <div class="hidden md:flex items-center gap-2">
                     <a href="{{ route('login') }}"
-                        class="px-4 py-1.5 text-sm font-light text-gray-300 hover:text-white transition-colors">
+                        class="px-4 py-1.5 text-sm font-light text-gray-300 hover:text-white transition-colors"
+                        wire:current.exact="text-[#C85C6E] font-bold">
                         Sign In
                     </a>
                     <a href="{{ route('register') }}"
-                        class="px-4 py-1.5 text-sm bg-[#C85C6E] rounded-full hover:bg-[#b54e60] transition-colors font-medium">
+                        class="px-4 py-1.5 text-sm bg-[#C85C6E] rounded-full hover:bg-[#b54e60] transition-colors font-medium"
+                        wire:current.exact="text-[#C85C6E] font-bold">
                         Sign Up
                     </a>
                 </div>
@@ -220,11 +206,13 @@ text-[#C85C6E]
 
             <button @click="mobileMenuOpen = !mobileMenuOpen"
                 class="md:hidden p-2.5 hover:bg-white/10 rounded-full transition-colors">
-                <svg x-show="!mobileMenuOpen" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                <svg x-show="!mobileMenuOpen" class="w-5 h-5" fill="none" stroke="currentColor"
+                    viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M4 6h16M4 12h16M4 18h16" />
                 </svg>
-                <svg x-show="mobileMenuOpen" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"
-                    style="display:none;">
+                <svg x-show="mobileMenuOpen" class="w-5 h-5" fill="none" stroke="currentColor"
+                    viewBox="0 0 24 24" style="display:none;">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                 </svg>
             </button>
@@ -236,29 +224,46 @@ text-[#C85C6E]
         x-transition:enter-start="opacity-0 -translate-y-2" x-transition:enter-end="opacity-100 translate-y-0"
         class="md:hidden border-t border-white/10 bg-[#1C1C1C]" style="display:none;">
         <div class="px-6 py-4 space-y-1">
-            <a href="/" class="block py-2.5 text-sm font-light hover:text-[#C85C6E] transition-colors">Home</a>
+            <a href="{{ route('home') }}"
+                class="block py-2.5 text-sm font-light hover:text-[#C85C6E] transition-colors"
+                wire:current.exact="text-[#C85C6E] font-bold">Home</a>
 
-            @foreach ($navGenders as $navGender)
+            @foreach ($this->navGenders as $navGender)
                 <div x-data="{ gOpen: false }">
                     {{-- Gender row --}}
-                    <button @click="gOpen = !gOpen"
-                        class="w-full text-left py-2.5 text-sm font-light hover:text-[#C85C6E] transition-colors
-                                                                                                                       flex items-center justify-between">
-                        {{ $navGender->name }}
+                    <div class="w-full text-left py-2.5 text-sm  hover:text-[#C85C6E] transition-colors
+                              flex items-center justify-between"
+                        @click="gOpen = !gOpen">
+                        <a href="{{ route('gender.index', $navGender) }}" @click.prevent
+                            wire:current="text-[#C85C6E] font-bold">
+                            {{ $navGender->name }}
+                        </a>
+
                         <svg class="w-4 h-4 transition-transform" :class="gOpen ? 'rotate-180' : ''" fill="none"
                             stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M19 9l-7 7-7-7" />
                         </svg>
-                    </button>
+                    </div>
+
 
                     <div x-show="gOpen" class="pl-3 border-l border-white/10 ml-1 space-y-0.5" style="display:none;">
+                        <a href="{{ route('gender.index', $navGender) }}"
+                            class="block py-1 pl-2 text-xs font-medium text-gray-600 border-l-2 border-[#C85C6E] hover:text-[#C85C6E] transition-colors"
+                            wire:current="text-[#C85C6E] font-semibold">
+                            All {{ $navGender->name }}
+                        </a>
                         @foreach ($navGender->children as $navCategory)
                             <div x-data="{ cOpen: false }">
+
                                 {{-- Category row --}}
-                                <button @click="cOpen = !cOpen"
-                                    class="w-full text-left py-2 text-sm text-gray-300 hover:text-[#C85C6E]
-                                                                                                                                                                                                                       transition-colors flex items-center justify-between">
+
+                                <a href="{{ route('gender.category.show', [$navGender, $navCategory]) }}"
+                                    @click="cOpen = !cOpen"
+                                    class="w-full text-left py-2 text-sm hover:text-[#C85C6E] transition-colors flex items-center justify-between"
+                                    @click.prevent wire:current="text-[#C85C6E] font-bold">
+
+
                                     {{ $navCategory->name }}
                                     @if ($navCategory->children->count() > 0)
                                         <svg class="w-3.5 h-3.5 transition-transform"
@@ -268,7 +273,8 @@ text-[#C85C6E]
                                                 d="M19 9l-7 7-7-7" />
                                         </svg>
                                     @endif
-                                </button>
+                                </a>
+
 
                                 {{-- Subcategory list --}}
                                 @if ($navCategory->children->count() > 0)
@@ -278,18 +284,22 @@ text-[#C85C6E]
                                             'gender' => $navGender,
                                             'category' => $navCategory,
                                         ]) }}"
-                                            class="block py-1.5 text-xs text-gray-500 hover:text-[#C85C6E] transition-colors">
+                                            class="block py-1.5 pl-2 text-xs font-medium text-gray-600 border-l-2 border-[#C85C6E] hover:text-[#C85C6E] transition-colors">
                                             All {{ $navCategory->name }}
                                         </a>
                                         @foreach ($navCategory->children as $navSubcategory)
-                                            <a href="{{ route('gender.subcategory.show', [
-                                                'gender' => $navGender,
-                                                'category' => $navCategory,
-                                                'subcategory' => $navSubcategory,
-                                            ]) }}"
-                                                class="block py-1.5 text-sm text-gray-400 hover:text-[#C85C6E] transition-colors">
-                                                {{ $navSubcategory->name }}
-                                            </a>
+                                            <div class="text-gray-400">
+
+                                                <a href="{{ route('gender.subcategory.show', [
+                                                    'gender' => $navGender,
+                                                    'category' => $navCategory,
+                                                    'subcategory' => $navSubcategory,
+                                                ]) }}"
+                                                    class="block py-1.5 text-sm hover:text-[#C85C6E] transition-colors"
+                                                    wire:current="text-[#C85C6E] font-bold">
+                                                    {{ $navSubcategory->name }}
+                                                </a>
+                                            </div>
                                         @endforeach
                                     </div>
                                 @endif
@@ -299,9 +309,10 @@ text-[#C85C6E]
                 </div>
             @endforeach
 
-            <a href="/about" class="block py-2.5 text-sm font-light hover:text-[#C85C6E] transition-colors">About</a>
-            <a href="/contact"
-                class="block py-2.5 text-sm font-light hover:text-[#C85C6E] transition-colors">Contact</a>
+            <a href="/about" class="block py-2.5 text-sm hover:text-[#C85C6E] transition-colors"
+                wire:current.exact="text-[#C85C6E] font-bold">About</a>
+            <a href="/contact" class="block py-2.5 text-sm hover:text-[#C85C6E] transition-colors"
+                wire:current.exact>Contact</a>
 
             <div class="pt-3 border-t border-white/10 flex gap-3">
                 @auth

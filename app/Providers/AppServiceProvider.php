@@ -30,8 +30,23 @@ class AppServiceProvider extends ServiceProvider
     {
 
         Blade::if('active', function ($routeName) {
-            return Route::is($routeName);
+            // If we can resolve the URL for the route name (e.g. route('home') -> 'http://localhost/')
+            try {
+                $targetUrl = route($routeName);
+                $currentUrl = request()->routeIs('livewire.update')
+                    ? request()->header('Referer')
+                    : request()->url();
+
+                // Strip query parameters for comparison
+                $cleanTarget = strtok($targetUrl, '?');
+                $cleanCurrent = strtok($currentUrl, '?');
+
+                return rtrim($cleanTarget, '/') === rtrim($cleanCurrent, '/');
+            } catch (\Throwable $e) {
+                return false;
+            }
         });
+
         Order::observe(OrderObserver::class);
 
         $this->registerRouteBindings();
