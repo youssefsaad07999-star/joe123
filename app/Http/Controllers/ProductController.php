@@ -21,11 +21,14 @@ class ProductController extends Controller
 
     public function genderIndex(Category $gender)
     {
-        // All products sitting under this gender
-        $products = Product::with(['variants', 'images'])
+        // 2. Flatten all subcategory IDs safely in memory
+        $subcategoryIds = $gender->children
+            ->flatMap(fn ($category) => $category->children)
+            ->pluck('id');
+
+        $products = Product::with(['variants', 'images', 'category.parent.parent'])
             ->isActive()
-            ->whereHas('category.parent.parent', fn ($q) => $q->where('id', $gender->id))
-            ->with('category.parent.parent')
+            ->whereIn('category_id', $subcategoryIds)
             ->latest()
             ->paginate(16);
 
@@ -34,33 +37,42 @@ class ProductController extends Controller
 
     public function categoryShow(Category $gender, Category $category)
     {
-        // $subcategories = $category->children()->get();
+        $subcategories = $category->children;
 
-        $products = Product::with(['variants.color', 'variants.size', 'images'])
+        $products = Product::with(['variants.color', 'variants.size', 'images', 'category.parent'])
             ->isActive()
-            ->whereHas('category', fn ($q) => $q->where('parent_id', $category->id))
+            ->whereIn('category_id', $subcategories->pluck('id'))
             ->latest()
             ->paginate(16);
 
-        return view('product.category.show', compact('gender', 'category', 'products'));
+        return view('product.category.show', compact('gender', 'subcategories', 'category', 'products'));
 
     }
 
     public function subcategoryShow(Category $gender, Category $category, Category $subcategory)
     {
-        $subcategories = $category->children()->get();
+        $subcategories = $category->children;
 
-        $products = Product::with(['variants.color', 'variants.size', 'images'])
+        $products = Product::query()
             ->isActive()
             ->where('category_id', $subcategory->id)
+            ->with([
+                'variants.color',
+                'variants.size',
+                'images',
+            ])
             ->latest()
             ->paginate(16);
 
         return view('product.subcategory.show', compact('gender', 'category', 'products', 'subcategory', 'subcategories'));
     }
 
-    public function productShow(Category $gender, Category $category, Category $subcategory, Product $product)
+    public function productShow(Product $product)
     {
+        $subcategory = $product->category;
+        $category = $subcategory?->parent;
+        $gender = $category?->parent;
+
         return view('product.show', compact('gender', 'category', 'subcategory', 'product'));
     }
 

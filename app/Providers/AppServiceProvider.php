@@ -51,9 +51,9 @@ class AppServiceProvider extends ServiceProvider
 
         Route::bind('gender', function (string $slug) {
             return Category::genders()
+                ->with('children.children')
                 ->active()
                 ->where('slug', $slug)
-                ->with('children.children')
                 ->firstOrFail();
         });
 
@@ -79,9 +79,9 @@ class AppServiceProvider extends ServiceProvider
 
             return Category::categories()
                 ->active()
+                ->with('children')
                 ->where('slug', $slug)
                 ->where('parent_id', $gender->id)
-                ->with(['parent', 'children'])
                 ->first();
         });
 

@@ -70,4 +70,10 @@ class Product extends Model
     {
         return $q->where('is_active', true);
     }
+
+    public function getGenderAttribute(): ?Category
+    {
+        // Returns top-level parent: Subcategory -> Category -> Gender
+        return $this->category?->parent?->parent;
+    }
 }

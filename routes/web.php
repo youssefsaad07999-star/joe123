@@ -120,8 +120,11 @@ Route::patch('/cart/{cartItem}', [CartItemController::class, 'update'])->name('c
 Route::delete('/cart/{cartItem}', [CartItemController::class, 'destroy'])->name('cart.destroy');
 Route::delete('/cart', [CartItemController::class, 'clear'])->name('cart.clear');
 
+Route::get('/products/{product}', [ProductController::class, 'productShow'])
+    ->name('product.show');
+
 Route::prefix('{gender}')
-    ->where(['gender' => '[a-z][a-z0-9-]*'])
+    // ->where(['gender' => '[a-z][a-z0-9-]*'])
     ->name('gender.')
     ->group(function () {
 
@@ -134,6 +137,4 @@ Route::prefix('{gender}')
         Route::get('/{category}/{subcategory}', [ProductController::class, 'subcategoryShow'])
             ->name('subcategory.show');
 
-        Route::get('/{category}/{subcategory}/{product}', [ProductController::class, 'productShow'])
-            ->name('product.show');
     });

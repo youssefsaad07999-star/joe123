@@ -64,18 +64,29 @@ new class extends Component {
             <a href="/"
                 class="px-4 py-2 text-sm tracking-wide hover:text-[#C85C6E] transition-colors
                       "
-                wire:current.exact="text-[#C85C6E] font-bold">
+                wire:current.exact="text-[#C85C6E] font-semibold border-b-2 border-[#C85C6E]">
                 Home
             </a>
 
 
             @foreach ($this->navGenders as $navGender)
                 <div class="relative" x-data="{ open: false }" @mouseenter="open = true" @mouseleave="open = false">
+                    @php
+                        // 1. Standard check for category/gender routes (e.g., /men/...)
+                        $isGenderRoute = request()->is($navGender->slug . '*');
+
+                        // 2. Check for single product route (/products/{product})
+                        $isCurrentProductGender =
+                            request()->routeIs('product.show') &&
+                            request()->route('product')?->gender?->slug === $navGender->slug;
+
+                        $isActive = $isGenderRoute || $isCurrentProductGender;
+                    @endphp
 
                     {{-- Gender link --}}
                     <a href="{{ route('gender.index', $navGender->slug) }}"
-                        class='px-4 py-2 text-sm  tracking-wide hover:text-[#C85C6E] transition-colors flex items-center gap-1',
-                        wire:current="text-[#C85C6E] font-bold">
+                        class='px-4 py-2 text-sm  tracking-wide hover:text-[#C85C6E] transition-colors flex items-center gap-1 
+                        {{ $isActive ? 'text-[#C85C6E] font-semibold border-b-2 border-[#C85C6E]' : '' }}'>
                         {{ $navGender->name }}
                         <svg class="w-3.5 h-3.5 opacity-60 transition-transform duration-200"
                             :class="open ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -151,11 +162,11 @@ new class extends Component {
             @endforeach
 
             <a href="/about" class="px-4 py-2 text-sm tracking-wide hover:text-[#C85C6E] transition-colors"
-                wire:current.exact="text-[#C85C6E] font-bold">
+                wire:current.exact="text-[#C85C6E] font-semibold border-b-2 border-[#C85C6E]">
                 About
             </a>
             <a href="/contact" class="px-4 py-2 text-sm tracking-wide hover:text-[#C85C6E] transition-colors"
-                wire:current.exact="text-[#C85C6E] font-bold">
+                wire:current.exact="text-[#C85C6E] font-semibold border-b-2 border-[#C85C6E]">
                 Contact
             </a>
         </div>
@@ -169,29 +180,29 @@ new class extends Component {
                 </a>
             @endhasrole
             @auth
-                <div class="hidden md:flex items-center gap-2">
-                    <a href="{{ route('orders.index') }}"
-                        class="px-3 py-1.5 text-sm font-light text-gray-300 hover:text-white transition-colors">
+                <div class="hidden md:flex items-center gap-2 font-light text-gray-300">
+                    <a href="{{ route('orders.index') }}" class="px-3 py-1.5 text-sm  hover:text-white transition-colors"
+                        wire:current.exact="text-[#C85C6E] font-semibold border-b-2 border-[#C85C6E]">
                         Orders
                     </a>
-                    <form action="{{ route('logout') }}" method="POST">
-                        @csrf
-                        <button type="submit"
-                            class="px-4 py-1.5 text-sm border border-white/20 rounded-full hover:border-white/60 transition-colors font-light">
-                            Sign Out
-                        </button>
-                    </form>
                 </div>
+                <form action="{{ route('logout') }}" method="POST">
+                    @csrf
+                    <button type="submit"
+                        class="px-4 py-1.5 text-sm border border-white/20 rounded-full hover:border-white/60 transition-colors font-light">
+                        Sign Out
+                    </button>
+                </form>
             @else
                 <div class="hidden md:flex items-center gap-2">
                     <a href="{{ route('login') }}"
                         class="px-4 py-1.5 text-sm font-light text-gray-300 hover:text-white transition-colors"
-                        wire:current.exact="text-[#C85C6E] font-bold">
+                        wire:current.exact="text-[#C85C6E] font-semibold border-b-2 border-[#C85C6E]">
                         Sign In
                     </a>
                     <a href="{{ route('register') }}"
-                        class="px-4 py-1.5 text-sm bg-[#C85C6E] rounded-full hover:bg-[#b54e60] transition-colors font-medium"
-                        wire:current.exact="text-[#C85C6E] font-bold">
+                        class="px-4 py-1.5 text-sm text-white bg-[#C85C6E] rounded-full hover:bg-[#b54e60] transition-all duration-200 font-medium inline-block"
+                        wire:current.exact="ring-2 ring-offset-2 ring-[#C85C6E] bg-[#b54e60] font-semibold">
                         Sign Up
                     </a>
                 </div>

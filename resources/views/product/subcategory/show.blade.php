@@ -86,7 +86,7 @@
             @endif
 
             <div class="transition-transform duration-300 hover:-translate-y-1">
-                <x-product-card :product="$product" :gender="$gender" :category="$product->category->parent" :subcategory="$product->category" />
+                <x-product-card :product="$product" />
             </div>
 
             @if ($loop->last)

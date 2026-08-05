@@ -31,7 +31,7 @@
                 All {{ $category->name }}
             </a>
 
-            @foreach ($category->children as $subcategory)
+            @foreach ($subcategories as $subcategory)
                 <a href="{{ route('gender.subcategory.show', ['gender' => $gender->slug, 'category' => $category->slug, 'subcategory' => $subcategory->slug]) }}"
                     class="px-5 py-2.5 rounded-full text-xs font-medium uppercase tracking-wider border transition-all duration-300 shrink-0 select-none
                         {{ request()->routeIs('*subcategory*') && request()->route('subcategory')?->id === $subcategory->id
@@ -81,7 +81,7 @@
             @endif
 
             <div class="transition-transform duration-300 hover:-translate-y-1">
-                <x-product-card :product="$product" :gender="$gender" :category="$product->category->parent" :subcategory="$product->category" />
+                <x-product-card :product="$product" />
             </div>
 
             @if ($loop->last)

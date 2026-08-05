@@ -61,7 +61,7 @@
             <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-4 gap-y-8 md:gap-x-6 md:gap-y-10">
                 @forelse($products as $product)
                     <div class="transition-transform duration-300 hover:-translate-y-1">
-                        <x-product-card :product="$product" :gender="$gender" :category="$product->category->parent" :subcategory="$product->category" />
+                        <x-product-card :product="$product" />
                     </div>
                 @empty
                     <div
