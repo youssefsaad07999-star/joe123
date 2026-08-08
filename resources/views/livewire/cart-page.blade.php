@@ -28,7 +28,7 @@
                                     $item->variant->product->images
                                         ->where('color_id', $item->variant->color_id)
                                         ->first() ?? $item->variant->product->primaryImage;
-                                dd($img);
+
                             @endphp
                             @if ($img)
                                 <img src="{{ asset('storage/' . $img->image_path) }}" class="w-full h-full object-cover"
